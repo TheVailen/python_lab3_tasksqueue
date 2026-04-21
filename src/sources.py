@@ -65,8 +65,6 @@ class ApiStubSource:
     name: str = "api-stub"
 
     def get_tasks(self) -> Iterable[Task]:
-        result: list[Task] = []
-
         for index, item in enumerate(self.response, start=1):
             if not isinstance(item, dict):
                 raise ValueError(f"API item #{index} must be an object")
@@ -75,6 +73,4 @@ class ApiStubSource:
                 raise ValueError(f"API item #{index} must contain payload")
 
             task_id = str(item.get("id", f"api-{index}"))
-            result.append(Task(id=task_id, payload=item["payload"]))
-
-        return result
+            yield Task(id=task_id, payload=item["payload"])

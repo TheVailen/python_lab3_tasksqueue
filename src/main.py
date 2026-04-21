@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 
 from src.intake import TaskIntake
+from src.models import Task, TaskStatus
 from src.sources import ApiStubSource, GeneratorSource, JsonlFileSource
-from src.contracts import Task
-
+from src.task_queue import TaskQueue
 from src.exceptions import InvalidPriorityError, InvalidStatusTransitionError
 
 
@@ -36,9 +36,7 @@ def main() -> None:
     for task in intake.iter_tasks():
         print(f"{task.id}: {json.dumps(task.payload, ensure_ascii=False)}")
 
-    # Демонстрация модели Task (Лаба 2) 
     print("\n=== Модель Task: дескрипторы и @property ===")
-
     task = Task(id="demo-1", description="Обработать заказ", priority=7)
     print(f"Создана: {task!r}")
     print(f"is_ready={task.is_ready}, is_active={task.is_active}, is_finished={task.is_finished}")
@@ -50,11 +48,34 @@ def main() -> None:
     task.complete()
     print(f"После complete(): status={task.status.value}, is_finished={task.is_finished}")
 
-    # Non-data descriptor: instance-атрибут перекрывает дескриптор
     task2 = Task(id="demo-2", description="Тест", priority=3)
     print(f"\nNon-data descriptor до перекрытия: {task2.label}")
-    task2.label = "custom-label" 
+    task2.label = "custom-label"
     print(f"Non-data descriptor после перекрытия: {task2.label}")
+
+    print("\n=== Очередь задач: итераторы и генераторы ===")
+    queue = TaskQueue([
+        Task(id="q-1", description="Обычная задача", priority=3),
+        Task(id="q-2", description="Срочная задача", priority=9),
+        Task(id="q-3", description="Задача в работе", priority=6),
+    ])
+    queue._tasks[2].start()
+
+    print("Все задачи в очереди:")
+    for item in queue:
+        print(f"{item.id}: priority={item.priority}, status={item.status.value}")
+
+    print("Повторный обход очереди:")
+    for item in queue:
+        print(item.id)
+
+    print("Фильтр по статусу IN_PROGRESS:")
+    for item in queue.filter_by_status(TaskStatus.IN_PROGRESS):
+        print(item.id)
+
+    print("Фильтр по приоритету >= 5:")
+    for item in queue.filter_by_priority(min_priority=5):
+        print(item.id)
 
     print("\n=== Исключения при нарушении инвариантов ===")
     try:
@@ -72,6 +93,9 @@ def main() -> None:
         t.complete()
     except InvalidStatusTransitionError as e:
         print(f"{type(e).__name__}: {e}")
+
+    if demo_file.exists():
+        demo_file.unlink()
 
 
 if __name__ == "__main__":

@@ -22,5 +22,9 @@ def test_main_prints_tasks(capsys) -> None:
     assert 'api-1: {"action": "sync_external_data"}' in output
     assert 'api-2: {"action": "rebuild_cache"}' in output
 
+    assert "=== Очередь задач: итераторы и генераторы ===" in output
+    assert "Фильтр по статусу IN_PROGRESS:" in output
+    assert "Фильтр по приоритету >= 5:" in output
+
     if demo_file.exists():
         demo_file.unlink()

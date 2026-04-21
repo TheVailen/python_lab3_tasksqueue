@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from typing import Optional
 
-from src.contracts import Task, TaskSource
+from src.models import Task
+from src.contracts import TaskSource
 
 
 class TaskIntake:
