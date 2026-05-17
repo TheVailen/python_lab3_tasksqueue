@@ -8,8 +8,8 @@
 ## 1) Установка проекта локально
 
 ```
-git clone 
-cd python_lab3
+git clone https://github.com/TheVailen/python_lab3_tasksqueue
+cd python_lab3_tasksqueue
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -124,15 +124,15 @@ python -m pytest tests/test_task_queue.py -v
 ## 5) Запуск в Docker
 
 ```bash
-docker build -t python-lab3 .
-docker run --rm python-lab3
-docker run --rm python-lab3 python -m pytest tests -v
+docker build -t python_lab3_tasksqueue .
+docker run --rm python_lab3_tasksqueue
+docker run --rm python_lab3_tasksqueue python -m pytest tests -v
 ```
 
 ### Тесты с покрытием в Docker
 
 ```bash
-docker run --rm python-lab3 python -m pytest --cov=src --cov-report=term-missing
+docker run --rm python_lab3_tasksqueue python -m pytest --cov=src --cov-report=term-missing
 ```
 
 ## 6) Структура проекта
